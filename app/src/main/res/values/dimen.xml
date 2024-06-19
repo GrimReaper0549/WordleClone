@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+<!--    Padding Values-->
+    <dimen name="no_padding">0dp</dimen>
+    <dimen name="extra_small_padding">4dp</dimen>
+    <dimen name="small_padding">8dp</dimen>
+    <dimen name="medium_padding">16dp</dimen>
+    <dimen name="large_padding">32dp</dimen>
+    <dimen name="extra_large_padding">48dp</dimen>
+
+<!--    How to Play card dimensional values -->
+    <dimen name="bulletpoint_size">4dp</dimen>
+    <dimen name="bulletpoint_padding">6dp</dimen>
+    <dimen name="box_size">32dp</dimen>
+    <dimen name="box_border_width">2dp</dimen>
+    <dimen name="midnight_line_width">250dp</dimen>
+    <dimen name="how_to_card_elevation">4dp</dimen>
+    <dimen name="how_to_play_play_button_width">240dp</dimen>
+
+<!--    Landing Page dimensional values -->
+    <dimen name="guess_width">280dp</dimen>
+    <dimen name="button_width">200dp</dimen>
+
+<!--    Game Page dimensional values -->
+    <dimen name="logo_size">36dp</dimen>
+    <dimen name="word_box_size">60dp</dimen>
+
+</resources>
