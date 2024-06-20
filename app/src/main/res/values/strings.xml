@@ -20,5 +20,7 @@
     <string name="login">Log in</string>
     <string name="play">Play</string>
     <string name="settings">Settings</string>
-    <string name="stats">Stats</string>
+    <string name="stats">StatisticsS</string>
+    <string name="stats_headline">Here to see your stats and streaks?</string>
+    <string name="back_space">Back Space</string>
 </resources>

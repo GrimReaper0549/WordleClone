@@ -3,6 +3,7 @@
 
 <!--    Padding Values-->
     <dimen name="no_padding">0dp</dimen>
+    <dimen name="extra_extra_small_padding">2dp</dimen>
     <dimen name="extra_small_padding">4dp</dimen>
     <dimen name="small_padding">8dp</dimen>
     <dimen name="medium_padding">16dp</dimen>
@@ -25,5 +26,9 @@
 <!--    Game Page dimensional values -->
     <dimen name="logo_size">36dp</dimen>
     <dimen name="word_box_size">60dp</dimen>
+    <dimen name="keyboard_box_height">42dp</dimen>
+    <dimen name="keyboard_box_width">32dp</dimen>
+    <dimen name="keyboard_box_width_enter_and_backspace_keys">48dp</dimen>
+    <dimen name="keyboard_box_rounded_corner_radius">5dp</dimen>
 
 </resources>

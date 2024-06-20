@@ -1,17 +1,30 @@
 package com.example.wordle.ui
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
-import com.example.wordle.R
 import com.example.wordle.data.WordleUiState
+import com.example.wordle.ui.theme.Gray
+import com.example.wordle.ui.theme.Green
+import com.example.wordle.ui.theme.Transparent
+import com.example.wordle.ui.theme.Yellow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import java.io.File
 
 const val MAX_NUMBER_OF_ATTEMPTS = 6
 
 private const val MAX_WORD_LENGTH = 5
+
+val KEYBOARD_ROWS = listOf("QWERTYUIOP", "ASDFGHJKL", "1ZXCVBNM2")
+
+val letterColorMap = mapOf(
+    0 to Transparent, // Idle State
+    1 to Gray, // Wrong State
+    2 to Yellow, // Partial Correct State
+    3 to Green, // Correct State
+    4 to Transparent // Input State
+)
 
 class WordleViewModel: ViewModel() {
 
@@ -36,6 +49,10 @@ class WordleViewModel: ViewModel() {
             }
             _uiState.value.userGuess.add(str)
         }
+    }
+
+    fun updateUserGuess(char: Char){ // A to Z, 1 for ENTER and 2 for BACKSPACE
+        Log.d("Check", char.toString())
     }
 
     init {

@@ -48,7 +48,8 @@ fun WordleApp(
                 )
             }
             composable(WordleScreens.GamePage.name){
-                GamePage(uiState = uiState)
+                GamePage(uiState = uiState,
+                    onKeyboardKeyClick = { viewModel.updateUserGuess(it) })
             }
             composable(WordleScreens.HowToPlayPage.name){
                 HowToPlayCard(

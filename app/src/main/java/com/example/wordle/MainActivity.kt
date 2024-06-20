@@ -45,6 +45,6 @@ fun WordleAppPreviewDark() {
 }
 
 
-
-// Add How to play accessibility, and activate the close button
-// Develop the Playing Page
+// Add connection between the keyboard and the user guesses
+// Figure out the issue with the alpha file
+// Create the basics of the app
