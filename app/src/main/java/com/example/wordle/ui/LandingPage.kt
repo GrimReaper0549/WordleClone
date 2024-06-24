@@ -52,14 +52,14 @@ fun LandingPage(
             Text(
                 text = stringResource(id = R.string.app_name),
                 style = MaterialTheme.typography.displayMedium,
-                color = MaterialTheme.colorScheme.onPrimary
+                color = MaterialTheme.colorScheme.onBackground
             )
             Text(
                 text = stringResource(id = R.string.landing_guess_in_6),
                 modifier = Modifier.width(dimensionResource(id = R.dimen.guess_width)),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onPrimary
+                color = MaterialTheme.colorScheme.onBackground
             )
 
             Column(modifier = Modifier.padding(top = dimensionResource(id = R.dimen.large_padding))) {
@@ -101,7 +101,7 @@ fun LandingPage(
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(top = dimensionResource(id = R.dimen.large_padding)),
-                color = MaterialTheme.colorScheme.onPrimary
+                color = MaterialTheme.colorScheme.onBackground
             )
         }
     }

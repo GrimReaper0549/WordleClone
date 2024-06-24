@@ -23,4 +23,12 @@
     <string name="stats">StatisticsS</string>
     <string name="stats_headline">Here to see your stats and streaks?</string>
     <string name="back_space">Back Space</string>
+
+    <string name="guess6">Phew</string>
+    <string name="guess5">Great</string>
+    <string name="guess4">Splendid</string>
+    <string name="guess3">Impressive</string>
+    <string name="guess2">Magnificent</string>
+    <string name="guess1">Genius</string>
+    <string name="notGuessed">Better Luck Next Time</string>
 </resources>

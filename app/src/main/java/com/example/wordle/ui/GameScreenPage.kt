@@ -1,9 +1,9 @@
 package com.example.wordle.ui
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Button
@@ -26,7 +25,6 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -40,19 +38,16 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.wordle.R
 import com.example.wordle.data.WordleUiState
 import com.example.wordle.ui.theme.Black
 import com.example.wordle.ui.theme.Box_Border
-import com.example.wordle.ui.theme.Gray
-import com.example.wordle.ui.theme.Green
-import com.example.wordle.ui.theme.Keyboard_Letters_Background_Color
+import com.example.wordle.ui.theme.Keyboard_Key_Shape
 import com.example.wordle.ui.theme.LightColorScheme
-import com.example.wordle.ui.theme.Transparent
+import com.example.wordle.ui.theme.Message_Box_Shape
 import com.example.wordle.ui.theme.White
-import com.example.wordle.ui.theme.Yellow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -110,29 +105,32 @@ private fun WordleTopAppBar(){
 }
 
 @Composable
-private fun WordInBlock(word: List<Char>){
+private fun WordInBlock(word: List<Char>, colors: List<Char>){
     for( i in word.indices) {
-        val backgroundColor = letterColorMap.getValue(0)
+        val backgroundColor = letterColorMap.getValue(colors[i]-'0')
         Text(
             text = "${word[i]}",
             modifier = Modifier
                 .padding(
-                    start = dimensionResource(id = R.dimen.extra_small_padding),
-                    end = dimensionResource(id = R.dimen.extra_small_padding)
+                    start = dimensionResource(id = R.dimen.extra_extra_small_padding),
+                    end = dimensionResource(id = R.dimen.extra_extra_small_padding)
                 )
                 .background(color = backgroundColor)
                 .border(
                     shape = RectangleShape,
                     width = dimensionResource(id = R.dimen.box_border_width),
-                    color = when (backgroundColor == letterColorMap.getValue(0)) {
+                    color = when (colors[i] == '0') {
                         true -> Box_Border
-                        else -> backgroundColor
+                        else -> when (colors[i] == '4') {
+                            true -> MaterialTheme.colorScheme.onBackground
+                            else -> backgroundColor
+                        }
                     }
                 )
                 .size(dimensionResource(id = R.dimen.word_box_size))
                 .wrapContentHeight(Alignment.CenterVertically)
                 .wrapContentWidth(Alignment.CenterHorizontally),
-            style = MaterialTheme.typography.bodyLarge,
+            style = MaterialTheme.typography.displaySmall,
             color = when(backgroundColor == Color.Transparent){
                 true-> when(MaterialTheme.colorScheme.surfaceVariant == LightColorScheme.surfaceVariant){
                     true-> Black
@@ -145,28 +143,37 @@ private fun WordInBlock(word: List<Char>){
 }
 
 @Composable
-private fun KeyboardLettersInBlock(word: List<Char>, onKeyboardKeyClick: (Char)-> Unit){
-    for( i in word.indices) {
-        Button(onClick = { onKeyboardKeyClick(word[i]) },
-            shape = RoundedCornerShape(dimensionResource(id =R.dimen.keyboard_box_rounded_corner_radius)),
+private fun KeyboardLettersInBlock(
+    word: List<Char>,
+    onKeyboardKeyClick: (Char)-> Unit,
+    keyboardColorMap: MutableMap<Char, Int>
+){
+    for(letter in word) {
+        val backgroundColor = keyboardLettersColorMap.getValue(keyboardColorMap.getValue(letter))
+        Button(onClick = { onKeyboardKeyClick(letter) },
+            shape = Keyboard_Key_Shape,
             elevation = ButtonDefaults.elevatedButtonElevation(defaultElevation = dimensionResource(id = R.dimen.how_to_card_elevation)),
             modifier = Modifier
                 .padding(
                     start = dimensionResource(id = R.dimen.extra_extra_small_padding),
                     end = dimensionResource(id = R.dimen.extra_extra_small_padding),
-                    bottom = dimensionResource(id = R.dimen.extra_small_padding)
+                    bottom = dimensionResource(id = R.dimen.small_padding)
                 )
                 .wrapContentHeight(Alignment.CenterVertically)
                 .wrapContentWidth(Alignment.CenterHorizontally)
                 .height(dimensionResource(id = R.dimen.keyboard_box_height))
-                .width(dimensionResource(id = when(word[i]){
-                    '1','2'-> R.dimen.keyboard_box_width_enter_and_backspace_keys
-                    else-> R.dimen.keyboard_box_width
-                })),
+                .width(
+                    dimensionResource(
+                        id = when (letter) {
+                            '1', '2' -> R.dimen.keyboard_box_width_enter_and_backspace_keys
+                            else -> R.dimen.keyboard_box_width
+                        }
+                    )
+                ),
             contentPadding = PaddingValues(dimensionResource(id = R.dimen.no_padding)),
-            colors = ButtonDefaults.buttonColors(containerColor = Keyboard_Letters_Background_Color)
+            colors = ButtonDefaults.buttonColors(containerColor = backgroundColor)
         ) {
-            when(word[i]){
+            when(letter){
                 '2'->
                     Icon(painter = painterResource(id = R.drawable.backspace), contentDescription = stringResource(
                         id = R.string.back_space),
@@ -179,7 +186,7 @@ private fun KeyboardLettersInBlock(word: List<Char>, onKeyboardKeyClick: (Char)-
                     )
                 else->
                     Text(
-                        text = "${word[i]}",
+                        text = "${letter}",
                         style = MaterialTheme.typography.bodyMedium,
                         color = White
                     )
@@ -192,7 +199,8 @@ private fun KeyboardLettersInBlock(word: List<Char>, onKeyboardKeyClick: (Char)-
 @Composable
 fun GamePage(
     uiState: WordleUiState,
-    onKeyboardKeyClick: (Char) -> Unit
+    onKeyboardKeyClick: (Char) -> Unit,
+    keyboardColorMap: MutableMap<Char, Int>
 ) {
     Scaffold(
         topBar = { WordleTopAppBar() }
@@ -211,18 +219,44 @@ fun GamePage(
                     repeat(MAX_NUMBER_OF_ATTEMPTS) {
                         Row(
                             modifier = Modifier
-                                .padding(dimensionResource(id = R.dimen.small_padding))
+                                .padding(dimensionResource(id = R.dimen.extra_extra_small_padding))
                         ) {
-                            WordInBlock(word = uiState.userGuess[it].toList())
+                            WordInBlock(word = uiState.userGuess[it].toList(), colors = uiState.userGuessColors[it].toList())
                         }
                     }
+                }
+                if (false) {
+                    Spacer(modifier = Modifier.weight(0.5F))
+                    Text(
+                        text = stringResource(id = R.string.guess1),
+                        modifier = Modifier
+//                        .border(shape = Message_Box_Shape, color = MaterialTheme.colorScheme.onPrimary, width = 2.dp)
+                            .background(
+                                color = MaterialTheme.colorScheme.primary,
+                                shape = Message_Box_Shape
+                            )
+                            .padding(
+                                top = dimensionResource(id = R.dimen.small_padding),
+                                bottom = dimensionResource(id = R.dimen.small_padding),
+                                start = dimensionResource(id = R.dimen.medium_padding),
+                                end = dimensionResource(id = R.dimen.medium_padding)
+                            )
+                            .clip(shape = Message_Box_Shape),
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        style = MaterialTheme.typography.bodyLarge
+                    )
                 }
                 Spacer(modifier = Modifier.weight(1F))
                 Column(horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.fillMaxWidth()) {
                     repeat(3) {
                         Row {
-                            KeyboardLettersInBlock(word = KEYBOARD_ROWS[it].toList(), onKeyboardKeyClick = onKeyboardKeyClick)
+                            KeyboardLettersInBlock(
+                                word = KEYBOARD_ROWS[it].toList(),
+                                onKeyboardKeyClick = onKeyboardKeyClick,
+                                keyboardColorMap = keyboardColorMap
+                            )
                         }
                     }
                 }

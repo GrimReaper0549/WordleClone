@@ -36,7 +36,7 @@ fun WordleApp(
         .wrapContentWidth(Alignment.CenterHorizontally)
     ){
         NavHost(navController = navController,
-            startDestination = WordleScreens.LandingPage.name) {
+            startDestination = WordleScreens.GamePage.name) {
             composable(WordleScreens.LandingPage.name){
                 LandingPage(
                     onPlayButtonClicked = {
@@ -49,7 +49,9 @@ fun WordleApp(
             }
             composable(WordleScreens.GamePage.name){
                 GamePage(uiState = uiState,
-                    onKeyboardKeyClick = { viewModel.updateUserGuess(it) })
+                    onKeyboardKeyClick = { viewModel.updateUserGuess(it) },
+                    keyboardColorMap = uiState.keyboardColorMap
+                )
             }
             composable(WordleScreens.HowToPlayPage.name){
                 HowToPlayCard(
