@@ -48,7 +48,10 @@ fun LandingPage(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Image(painter = painterResource(id = R.drawable.wordle_logo), contentDescription = null)
+            Image(
+                painter = painterResource(id = R.drawable.wordle_logo),
+                contentDescription = null
+            )
             Text(
                 text = stringResource(id = R.string.app_name),
                 style = MaterialTheme.typography.displayMedium,
@@ -62,7 +65,10 @@ fun LandingPage(
                 color = MaterialTheme.colorScheme.onBackground
             )
 
-            Column(modifier = Modifier.padding(top = dimensionResource(id = R.dimen.large_padding))) {
+            Column(
+                modifier = Modifier
+                    .padding(top = dimensionResource(id = R.dimen.large_padding))
+            ) {
                 OutlinedButton(
                     onClick = { onHowToPlayClicked() },
                     modifier = Modifier

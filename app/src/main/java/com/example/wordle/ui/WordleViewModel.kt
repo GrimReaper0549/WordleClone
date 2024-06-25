@@ -67,7 +67,7 @@ class WordleViewModel: ViewModel() {
 
     private fun initialiseWord(){
         val currentWord = WORDLE_WORD_LIST.random()
-        val currentWordMap = _uiState.value.currentWordMap
+        val currentWordMap = _uiState.value.currentWordMap.toMutableMap()
         for(letter in currentWord){
             currentWordMap[letter] = currentWordMap[letter]!!.plus(1)
         }
@@ -80,8 +80,9 @@ class WordleViewModel: ViewModel() {
         Log.d("Check", currentWord)
     }
 
-    private fun resetGame(){
-        _uiState.update { currentState-> currentState.copy(
+    private fun initialiseUiState(){
+        _uiState.update { currentState->
+            currentState.copy(
             currentWord = "",
             userGuess = mutableListOf(),
             userGuessColors = mutableListOf(),
@@ -143,9 +144,16 @@ class WordleViewModel: ViewModel() {
                 'W' to 0,
                 'X' to 0,
                 'Y' to 0,
-                'Z' to 0
+                'Z' to 0,
+                '1' to 0,
+                '2' to 0
             )
         ) }
+    }
+
+    fun resetGame(){
+        Log.d("Check", "RESET")
+//        initialiseUiState()
         initialiseTheGame()
     }
 
@@ -172,103 +180,114 @@ class WordleViewModel: ViewModel() {
 //        _uiState.value.solvedCount.forEach {
 //            Log.d("Check", it.toString())
 //        }
+        _uiState.update { currentState->
+            currentState.copy(solved = true)
+        }
     }
 
     private fun setColorsOnWordEntered(): String{
         val currentGuess = _uiState.value.userGuess[_uiState.value.attemptCount]
         var str = ""
         val currentWord = _uiState.value.currentWord
-        val currentWordMap = _uiState.value.currentWordMap
+        val currentWordMap = _uiState.value.currentWordMap.toMutableMap()
         for(i in currentGuess.indices) {
             if(currentGuess[i] == currentWord[i]){
-                str+="3"
-                _uiState.value.keyboardColorMap[currentGuess[i]] = 3
                 currentWordMap[currentGuess[i]] = currentWordMap[currentGuess[i]]!!.plus(-1)
-            }
-            else{
-                str+= if(currentWordMap[currentGuess[i]]!! > 0) {
-                    currentWordMap[currentGuess[i]] = currentWordMap[currentGuess[i]]!!.plus(-1)
-                    _uiState.value.keyboardColorMap[currentGuess[i]] = 2
-                    "2"
-                } else {
-                    _uiState.value.keyboardColorMap[currentGuess[i]] = 1
-                    "1"
+                if(_uiState.value.keyboardColorMap[currentGuess[i]]!! < 3) {
+                    _uiState.value.keyboardColorMap[currentGuess[i]] = 3
                 }
+                str += "3"
+            }
+            else if(currentWordMap[currentGuess[i]]!! > 0) {
+                currentWordMap[currentGuess[i]] = currentWordMap[currentGuess[i]]!!.plus(-1)
+                if(_uiState.value.keyboardColorMap[currentGuess[i]]!! < 2) {
+                    _uiState.value.keyboardColorMap[currentGuess[i]] = 2
+                }
+                str += "2"
+            }
+            else {
+                if(_uiState.value.keyboardColorMap[currentGuess[i]]!! < 1) {
+                    _uiState.value.keyboardColorMap[currentGuess[i]] = 1
+                }
+                str += "1"
             }
         }
         return str
     }
 
     fun updateUserGuess(char: Char) { // A to Z, 1 for ENTER and 2 for BACKSPACE
-        when(char){
-            '1'-> {
-                if (isAValidWord(_uiState.value.userGuess[_uiState.value.attemptCount])) {
-                    var str=""
-                    val userGuessColors = _uiState.value.userGuessColors
-                    if(_uiState.value.userGuess[_uiState.value.attemptCount] == _uiState.value.currentWord){
+        if(!_uiState.value.solved){
+            when(char){
+                '1'-> {
+                    if (isAValidWord(_uiState.value.userGuess[_uiState.value.attemptCount])) {
+                        var str=""
+                        val userGuessColors = _uiState.value.userGuessColors.toMutableList()
+                        if(_uiState.value.userGuess[_uiState.value.attemptCount] == _uiState.value.currentWord){
 //                        Solved(Message for how many tries taken)
                             repeat(MAX_WORD_LENGTH){
                                 str+="3"
                             }
-//                            solved()
+                            solved()
+//                            return
 //                            resetGame()
-                    }
-                    else{
-                        str = setColorsOnWordEntered()
-                    }
-                    userGuessColors[_uiState.value.attemptCount]=str
-                    _uiState.update { currentState ->
-                        currentState.copy(
-                            attemptCount = _uiState.value.attemptCount.inc(),
-                            currentLetter = 0,
-                            userGuessColors = userGuessColors
-                        )
-                    }
-                }
-            }
-            '2'-> {
-                if(_uiState.value.currentLetter>0){
-                    val userChoices = _uiState.value.userGuess
-                    val userChoiceColors = _uiState.value.userGuessColors
-                    var str = userChoices[_uiState.value.attemptCount].slice(0..<_uiState.value.currentLetter-1)
-                    repeat(MAX_WORD_LENGTH - _uiState.value.currentLetter+1) {
-                        str += " "
-                    }
-                    userChoices[_uiState.value.attemptCount] = str
-                    str = userChoiceColors[_uiState.value.attemptCount].slice(0..<_uiState.value.currentLetter-1)
-                    repeat(MAX_WORD_LENGTH - _uiState.value.currentLetter+1) {
-                        str += "0"
-                    }
-                    userChoiceColors[_uiState.value.attemptCount] = str
-                    _uiState.update { currentState ->
-                        currentState.copy(
-                            currentLetter = _uiState.value.currentLetter.dec(),
-                            userGuess = userChoices,
-                            userGuessColors = userChoiceColors
-                        )
+                        }
+                        else{
+                            str = setColorsOnWordEntered()
+                        }
+                        userGuessColors[_uiState.value.attemptCount]=str
+                        _uiState.update { currentState ->
+                            currentState.copy(
+                                attemptCount = _uiState.value.attemptCount.inc(),
+                                currentLetter = 0,
+                                userGuessColors = userGuessColors
+                            )
+                        }
                     }
                 }
-            }
-            else-> {
-                if(_uiState.value.currentLetter < MAX_WORD_LENGTH) {
-                    val userChoices = _uiState.value.userGuess
-                    val userChoiceColors = _uiState.value.userGuessColors
-                    var str = userChoices[_uiState.value.attemptCount].slice(0..<_uiState.value.currentLetter) + char
-                    repeat(MAX_WORD_LENGTH - _uiState.value.currentLetter - 1) {
-                        str += " "
+                '2'-> {
+                    if(_uiState.value.currentLetter>0){
+                        val userChoices = _uiState.value.userGuess.toMutableList()
+                        val userChoiceColors = _uiState.value.userGuessColors.toMutableList()
+                        var str = userChoices[_uiState.value.attemptCount].slice(0..<_uiState.value.currentLetter-1)
+                        repeat(MAX_WORD_LENGTH - _uiState.value.currentLetter+1) {
+                            str += " "
+                        }
+                        userChoices[_uiState.value.attemptCount] = str
+                        str = userChoiceColors[_uiState.value.attemptCount].slice(0..<_uiState.value.currentLetter-1)
+                        repeat(MAX_WORD_LENGTH - _uiState.value.currentLetter+1) {
+                            str += "0"
+                        }
+                        userChoiceColors[_uiState.value.attemptCount] = str
+                        _uiState.update { currentState ->
+                            currentState.copy(
+                                currentLetter = _uiState.value.currentLetter.dec(),
+                                userGuess = userChoices,
+                                userGuessColors = userChoiceColors
+                            )
+                        }
                     }
-                    userChoices[_uiState.value.attemptCount] = str
-                    str = userChoiceColors[_uiState.value.attemptCount].slice(0..<_uiState.value.currentLetter) + "4"
-                    repeat(MAX_WORD_LENGTH - _uiState.value.currentLetter - 1) {
-                        str += "0"
-                    }
-                    userChoiceColors[_uiState.value.attemptCount] = str
-                    _uiState.update { currentState ->
-                        currentState.copy(
-                            currentLetter = _uiState.value.currentLetter.inc(),
-                            userGuess = userChoices,
-                            userGuessColors = userChoiceColors
-                        )
+                }
+                else-> {
+                    if(_uiState.value.currentLetter < MAX_WORD_LENGTH) {
+                        val userChoices = _uiState.value.userGuess.toMutableList()
+                        val userChoiceColors = _uiState.value.userGuessColors.toMutableList()
+                        var str = userChoices[_uiState.value.attemptCount].slice(0..<_uiState.value.currentLetter) + char
+                        repeat(MAX_WORD_LENGTH - _uiState.value.currentLetter - 1) {
+                            str += " "
+                        }
+                        userChoices[_uiState.value.attemptCount] = str
+                        str = userChoiceColors[_uiState.value.attemptCount].slice(0..<_uiState.value.currentLetter) + "4"
+                        repeat(MAX_WORD_LENGTH - _uiState.value.currentLetter - 1) {
+                            str += "0"
+                        }
+                        userChoiceColors[_uiState.value.attemptCount] = str
+                        _uiState.update { currentState ->
+                            currentState.copy(
+                                currentLetter = _uiState.value.currentLetter.inc(),
+                                userGuess = userChoices,
+                                userGuessColors = userChoiceColors
+                            )
+                        }
                     }
                 }
             }

@@ -198,18 +198,25 @@ private fun KeyboardLettersInBlock(
 
 @Composable
 fun GamePage(
-    uiState: WordleUiState,
+    userGuess: MutableList<String>,
+    userGuessColors: MutableList<String>,
     onKeyboardKeyClick: (Char) -> Unit,
-    keyboardColorMap: MutableMap<Char, Int>
+    keyboardColorMap: MutableMap<Char, Int>,
+    attemptCount: Int,
+    isSolved: Boolean,
+    resetGame: () -> Unit
 ) {
     Scaffold(
         topBar = { WordleTopAppBar() }
     ) { innerPadding ->
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .padding(innerPadding)){
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ){
             Column(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Column(
@@ -221,16 +228,26 @@ fun GamePage(
                             modifier = Modifier
                                 .padding(dimensionResource(id = R.dimen.extra_extra_small_padding))
                         ) {
-                            WordInBlock(word = uiState.userGuess[it].toList(), colors = uiState.userGuessColors[it].toList())
+                            WordInBlock(
+                                word = userGuess[it].toList(),
+                                colors = userGuessColors[it].toList()
+                            )
                         }
                     }
                 }
-                if (false) {
+                if (attemptCount == MAX_NUMBER_OF_ATTEMPTS || isSolved) {
                     Spacer(modifier = Modifier.weight(0.5F))
                     Text(
-                        text = stringResource(id = R.string.guess1),
+                        text = stringResource(id = when(attemptCount){
+                            1-> R.string.guess1
+                            2-> R.string.guess2
+                            3-> R.string.guess3
+                            4-> R.string.guess4
+                            5-> R.string.guess5
+                            else-> if(isSolved) R.string.guess6
+                                    else R.string.notGuessed
+                        }),
                         modifier = Modifier
-//                        .border(shape = Message_Box_Shape, color = MaterialTheme.colorScheme.onPrimary, width = 2.dp)
                             .background(
                                 color = MaterialTheme.colorScheme.primary,
                                 shape = Message_Box_Shape
@@ -246,10 +263,18 @@ fun GamePage(
                         color = MaterialTheme.colorScheme.onPrimary,
                         style = MaterialTheme.typography.bodyLarge
                     )
+                    Button(
+                        onClick = { resetGame() }
+                    ) {
+                        Text(text = "New Game")
+                    }
                 }
                 Spacer(modifier = Modifier.weight(1F))
-                Column(horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.fillMaxWidth()) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
                     repeat(3) {
                         Row {
                             KeyboardLettersInBlock(

@@ -18,7 +18,6 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             WordleTheme {
-
                 WordleApp()
             }
         }
@@ -46,6 +45,3 @@ fun WordleAppPreviewDark() {
 }
 
 
-// Add connection between the keyboard and the user guesses
-// Figure out the issue with the alpha file
-// Create the basics of the app

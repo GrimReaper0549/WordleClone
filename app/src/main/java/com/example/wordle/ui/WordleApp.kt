@@ -30,34 +30,36 @@ fun WordleApp(
     val uiState by viewModel.uiState.collectAsState()
     val backStackEntry by navController.currentBackStackEntryAsState()
 
-    Box(modifier = Modifier
+    Box(
+        modifier = Modifier
         .fillMaxSize()
         .wrapContentHeight(Alignment.CenterVertically)
         .wrapContentWidth(Alignment.CenterHorizontally)
     ){
-        NavHost(navController = navController,
-            startDestination = WordleScreens.GamePage.name) {
+        NavHost(
+            navController = navController,
+            startDestination = WordleScreens.GamePage.name
+        ) {
             composable(WordleScreens.LandingPage.name){
                 LandingPage(
-                    onPlayButtonClicked = {
-                        navController.navigate(WordleScreens.GamePage.name)
-                    },
-                    onHowToPlayClicked = {
-                        navController.navigate(WordleScreens.HowToPlayPage.name)
-                    }
+                    onPlayButtonClicked = { navController.navigate(WordleScreens.GamePage.name) },
+                    onHowToPlayClicked = { navController.navigate(WordleScreens.HowToPlayPage.name) }
                 )
             }
             composable(WordleScreens.GamePage.name){
-                GamePage(uiState = uiState,
+                GamePage(
+                    userGuess = uiState.userGuess,
+                    userGuessColors = uiState.userGuessColors,
                     onKeyboardKeyClick = { viewModel.updateUserGuess(it) },
-                    keyboardColorMap = uiState.keyboardColorMap
+                    keyboardColorMap = uiState.keyboardColorMap,
+                    attemptCount = uiState.attemptCount,
+                    isSolved = uiState.solved,
+                    resetGame = { viewModel.resetGame() }
                 )
             }
             composable(WordleScreens.HowToPlayPage.name){
                 HowToPlayCard(
-                    onPlayButtonClicked = {
-                        navController.navigate(WordleScreens.GamePage.name)
-                    },
+                    onPlayButtonClicked = { navController.navigate(WordleScreens.GamePage.name) },
                     navigateUp = { navController.navigateUp() }
                 )
             }
